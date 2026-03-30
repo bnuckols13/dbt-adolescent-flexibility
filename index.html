@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexibility in Recovery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --text:       #1C1917;
+            --text-2:     #57534E;
+            --text-3:     #A8A29E;
+            --accent:     #3A7A6A;
+            --accent-bg:  #EBF5F2;
+            --warm:       #8A6A3A;
+            --warm-bg:    #F5F0E8;
+            --border:     #E7E5E4;
+            --bg:         #FAFAF7;
+            --surface:    #FFFFFF;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.75;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body::before {
+            content: '';
+            display: block;
+            height: 3px;
+            background: var(--accent);
+        }
+
+        .container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem 4rem;
+        }
+
+        /* Header */
+        .header { margin-bottom: 2.5rem; }
+        .header-label {
+            font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--accent); margin-bottom: 0.75rem;
+        }
+        h1 {
+            font-size: 2.4rem; font-weight: 700; line-height: 1.15;
+            color: var(--text); letter-spacing: -0.02em; margin-bottom: 0.5rem;
+        }
+        .subtitle { font-size: 1.05rem; color: var(--text-2); }
+
+        /* Navigation */
+        .nav {
+            display: flex; gap: 0.25rem; border-bottom: 1px solid var(--border);
+            margin-bottom: 2.5rem; overflow-x: auto; -webkit-overflow-scrolling: touch;
+        }
+        .nav button {
+            background: none; border: none; border-bottom: 2px solid transparent;
+            padding: 0.75rem 1rem; font-family: inherit; font-size: 0.875rem;
+            font-weight: 500; color: var(--text-3); cursor: pointer; white-space: nowrap;
+            transition: color 0.15s, border-color 0.15s;
+        }
+        .nav button:hover { color: var(--text-2); }
+        .nav button.active { color: var(--accent); font-weight: 600; border-bottom-color: var(--accent); }
+
+        /* Pages */
+        .page { display: none; }
+        .page.active { display: block; animation: appear 0.25s ease; }
+        @keyframes appear { from { opacity: 0; } to { opacity: 1; } }
+
+        /* Typography */
+        .section-label {
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--text-3); margin-bottom: 0.5rem;
+        }
+        .section-label.green { color: var(--accent); }
+        .section-label.warm { color: var(--warm); }
+
+        h2 {
+            font-size: 1.35rem; font-weight: 700; color: var(--text);
+            letter-spacing: -0.01em; margin-bottom: 0.75rem;
+        }
+        h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+        .body-text { font-size: 0.95rem; color: var(--text-2); line-height: 1.8; }
+        .body-text + .body-text { margin-top: 0.75rem; }
+        .body-text strong { color: var(--text); font-weight: 600; }
+
+        .timing {
+            font-size: 0.75rem; font-weight: 500; color: var(--text-3);
+            float: right; margin-top: 0.2rem;
+        }
+
+        .divider { border: none; border-top: 1px solid var(--border); margin: 2.5rem 0; }
+
+        /* Callout */
+        .callout {
+            border-left: 3px solid var(--border);
+            padding: 1rem 1.25rem; margin: 1.5rem 0;
+        }
+        .callout.green { border-left-color: var(--accent); background: var(--accent-bg); }
+        .callout.warm { border-left-color: var(--warm); background: var(--warm-bg); }
+        .callout .callout-label {
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--text-3); margin-bottom: 0.4rem;
+        }
+        .callout p { font-size: 0.9rem; color: var(--text-2); line-height: 1.7; }
+
+        /* Options grid */
+        .options-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+            background: var(--border); border: 1px solid var(--border);
+            border-radius: 8px; overflow: hidden; margin: 1.5rem 0;
+        }
+        .option { background: var(--surface); padding: 1.25rem; cursor: pointer; transition: background 0.15s; }
+        .option:hover { background: var(--bg); }
+        .option.selected { background: var(--accent-bg); }
+        .option-label { font-size: 0.9rem; font-weight: 600; color: var(--text); margin-bottom: 0.2rem; }
+        .option-desc { font-size: 0.8rem; color: var(--text-3); line-height: 1.5; }
+
+        /* Accordion */
+        .accordion { margin: 1.5rem 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+        .acc-item { border-bottom: 1px solid var(--border); }
+        .acc-item:last-child { border-bottom: none; }
+        .acc-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem 1.25rem; cursor: pointer; background: var(--surface);
+            transition: background 0.15s; user-select: none;
+        }
+        .acc-header:hover { background: var(--bg); }
+        .acc-title { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+        .acc-icon { font-size: 1.1rem; color: var(--text-3); transition: transform 0.2s; font-weight: 300; line-height: 1; }
+        .acc-item.open .acc-icon { transform: rotate(45deg); }
+        .acc-body { display: none; padding: 0 1.25rem 1.25rem; background: var(--surface); }
+        .acc-item.open .acc-body { display: block; }
+        .acc-body p { font-size: 0.9rem; color: var(--text-2); line-height: 1.75; }
+        .acc-body ul { list-style: none; margin-top: 0.5rem; }
+        .acc-body ul li { font-size: 0.9rem; color: var(--text-2); line-height: 1.75; padding-left: 1rem; position: relative; }
+        .acc-body ul li::before { content: '·'; position: absolute; left: 0; color: var(--text-3); }
+        .acc-body .aside {
+            margin-top: 0.75rem; font-size: 0.85rem; font-style: italic;
+            color: var(--text-3); padding-left: 1rem; border-left: 2px solid var(--border);
+        }
+
+        /* Numbered steps */
+        .steps { margin: 1.5rem 0; }
+        .step { display: flex; gap: 1rem; align-items: baseline; padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+        .step:last-child { border-bottom: none; }
+        .step-num { font-size: 0.8rem; font-weight: 700; color: var(--text-3); flex-shrink: 0; width: 1.5rem; text-align: right; }
+        .step-content { flex: 1; }
+        .step-q { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+        .step-hint { font-size: 0.82rem; color: var(--text-3); margin-top: 0.15rem; line-height: 1.6; }
+
+        /* Discussion questions */
+        .questions { margin: 1.5rem 0; }
+        .question { padding: 1rem 0; border-bottom: 1px solid var(--border); }
+        .question:last-child { border-bottom: none; }
+        .question-label {
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--text-3); margin-bottom: 0.3rem;
+        }
+        .question-text { font-size: 0.95rem; font-weight: 500; color: var(--text); line-height: 1.7; }
+        .question-note { font-size: 0.82rem; font-style: italic; color: var(--text-3); margin-top: 0.3rem; }
+
+        /* Spectrum bar */
+        .spectrum {
+            margin: 1.5rem 0; border: 1px solid var(--border); border-radius: 8px;
+            overflow: hidden;
+        }
+        .spectrum-bar {
+            display: flex; height: 48px;
+        }
+        .spectrum-zone {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em;
+            text-transform: uppercase; cursor: pointer; transition: opacity 0.15s;
+            user-select: none;
+        }
+        .spectrum-zone:hover { opacity: 0.85; }
+        .spectrum-zone.rigid { background: #E8D5C4; color: #7A5A3A; }
+        .spectrum-zone.flex { background: var(--accent-bg); color: var(--accent); }
+        .spectrum-zone.chaos { background: #E0D0E5; color: #6A4A7A; }
+        .spectrum-detail {
+            display: none; padding: 1.25rem; background: var(--surface);
+            border-top: 1px solid var(--border);
+        }
+        .spectrum-detail.active { display: block; }
+        .spectrum-detail p { font-size: 0.9rem; color: var(--text-2); line-height: 1.75; }
+        .spectrum-detail ul { list-style: none; margin-top: 0.5rem; }
+        .spectrum-detail ul li { font-size: 0.9rem; color: var(--text-2); line-height: 1.75; padding-left: 1rem; position: relative; }
+        .spectrum-detail ul li::before { content: '·'; position: absolute; left: 0; color: var(--text-3); }
+
+        /* Flex challenge cards */
+        .challenge-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+            background: var(--border); border: 1px solid var(--border);
+            border-radius: 8px; overflow: hidden; margin: 1.5rem 0;
+        }
+        .challenge {
+            background: var(--surface); padding: 1.25rem;
+            cursor: pointer; transition: background 0.15s;
+        }
+        .challenge:hover { background: var(--bg); }
+        .challenge.revealed { background: var(--accent-bg); }
+        .challenge-domain {
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em;
+            text-transform: uppercase; color: var(--text-3); margin-bottom: 0.3rem;
+        }
+        .challenge-rigid {
+            font-size: 0.88rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem;
+        }
+        .challenge-flex {
+            font-size: 0.82rem; color: var(--accent); line-height: 1.6;
+            display: none; font-weight: 500;
+        }
+        .challenge.revealed .challenge-flex { display: block; }
+        .challenge.revealed .challenge-rigid { color: var(--text-3); text-decoration: line-through; font-weight: 400; }
+
+        /* Card draw */
+        .card-deck {
+            display: flex; gap: 0.75rem; justify-content: center;
+            flex-wrap: wrap; margin: 1.5rem 0;
+        }
+        .draw-card {
+            width: 128px; height: 182px; perspective: 700px;
+            cursor: pointer; flex-shrink: 0;
+        }
+        .draw-card-inner {
+            position: relative; width: 100%; height: 100%;
+            transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .draw-card.flipped .draw-card-inner { transform: rotateY(180deg); }
+        .draw-card-back, .draw-card-front {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; -webkit-backface-visibility: hidden;
+            border-radius: 10px; display: flex; align-items: center;
+            justify-content: center; text-align: center;
+        }
+        .draw-card-back {
+            background: linear-gradient(145deg, #D8EDE6, #C8DED6); border: 2px solid var(--accent);
+            flex-direction: column; gap: 0.4rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .draw-card-back .card-glyph {
+            font-size: 1.4rem; color: var(--accent); opacity: 0.7; line-height: 1;
+        }
+        .draw-card-back .card-label {
+            font-size: 0.6rem; font-weight: 600; letter-spacing: 0.12em;
+            text-transform: uppercase; color: var(--accent); opacity: 0.7;
+        }
+        .draw-card-front {
+            background: var(--surface); border: 1px solid var(--border);
+            transform: rotateY(180deg); padding: 0.9rem;
+            flex-direction: column; gap: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        .draw-card-front .card-prompt {
+            font-size: 0.78rem; font-weight: 500; color: var(--text); line-height: 1.6;
+        }
+        .draw-card-front .card-num {
+            font-size: 0.6rem; font-weight: 600; color: var(--text-3); letter-spacing: 0.1em;
+        }
+        .reshuffle-wrap { text-align: center; margin-top: 1rem; }
+        .reshuffle-btn {
+            background: none; border: 1px solid var(--border); border-radius: 6px;
+            font-family: inherit; font-size: 0.8rem; font-weight: 500;
+            color: var(--text-2); padding: 0.5rem 1.25rem; cursor: pointer;
+            transition: background 0.15s, border-color 0.15s;
+        }
+        .reshuffle-btn:hover { background: var(--bg); border-color: var(--text-3); }
+
+        /* Page nav */
+        .page-nav {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+        }
+        .page-nav button {
+            background: none; border: none; font-family: inherit; font-size: 0.9rem;
+            font-weight: 500; color: var(--accent); cursor: pointer; padding: 0.5rem 0;
+            transition: opacity 0.15s;
+        }
+        .page-nav button:hover { opacity: 0.7; }
+        .page-nav .ghost { visibility: hidden; }
+
+        /* Footer */
+        .footer {
+            margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border);
+            text-align: center; font-size: 0.8rem; color: var(--text-3); line-height: 1.8;
+        }
+        .footer strong { color: var(--text-2); font-weight: 600; }
+
+        @media (max-width: 600px) {
+            .container { padding: 2rem 1.25rem 3rem; }
+            h1 { font-size: 1.8rem; }
+            .options-grid { grid-template-columns: 1fr; }
+            .challenge-grid { grid-template-columns: 1fr; }
+            .draw-card { width: 110px; height: 158px; }
+            .draw-card-front .card-prompt { font-size: 0.72rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <header class="header">
+        <div class="header-label">Adolescent Recovery Group</div>
+        <h1>Flexibility</h1>
+        <p class="subtitle">The thing that bends is the thing that lasts</p>
+    </header>
+
+    <nav class="nav">
+        <button class="active" onclick="showPage(0, this)">Welcome</button>
+        <button onclick="showPage(1, this)">The Skills</button>
+        <button onclick="showPage(2, this)">Practice</button>
+        <button onclick="showPage(3, this)">Discussion</button>
+        <button onclick="showPage(4, this)">Closing</button>
+    </nav>
+
+
+    <!-- ======================== WELCOME ======================== -->
+    <div class="page active">
+
+        <div class="section-label green">Welcome</div>
+        <h2><span class="timing">5 to 8 min</span>About today's group</h2>
+        <p class="body-text">
+            Today we're talking about flexibility. Not the yoga kind. The kind that shows up in how you think, how you act, and how you handle it when life does something you didn't plan for.
+        </p>
+        <p class="body-text">
+            Here's the thing about eating disorders: they love rigidity. They love rules, routines, and the feeling that everything is under control. Flexibility is what the disorder is most afraid of, because flexible people are harder to control.
+        </p>
+
+        <div class="callout" style="margin-top: 1.5rem;">
+            <div class="callout-label">Confidentiality</div>
+            <p>
+                What's shared here stays here. Names, stories, details. All protected. The one exception
+                is safety: if there's risk of harm, that changes things. Outside of that, this space is yours.
+            </p>
+        </div>
+
+        <div class="callout">
+            <p>
+                <strong>You can pass at any point.</strong> No explanation needed.
+                If something doesn't fit right now, say "pass" and we move on.
+            </p>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section-label">Check-in</div>
+        <h2><span class="timing">10 min</span>Getting into it</h2>
+
+        <h3 style="margin-top: 1.5rem;">1. Bridge question</h3>
+        <p class="body-text" style="margin-top: 0.25rem;">
+            Share your name, then: <strong>What's one rule or routine you follow every single day that you've never questioned? It can be tiny. Just name it.</strong>
+        </p>
+        <div class="callout" style="margin-top: 0.75rem;">
+            <p>One sentence is plenty. Pass is always fine.</p>
+        </div>
+
+        <h3 style="margin-top: 2rem;">2. Experiential exercise</h3>
+        <p class="body-text" style="margin-top: 0.25rem;">
+            Sit up straight. Like, really straight. Hold it.
+        </p>
+        <div class="steps" style="margin-top: 1rem;">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <div class="step-q">Notice what's happening in your body right now. Tension, effort, holding.</div>
+                    <div class="step-hint">This is rigidity. It takes a lot of energy to maintain.</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <div class="step-q">Now let your body find a position that's comfortable but still upright. Let your shoulders drop. Unclench your jaw.</div>
+                    <div class="step-hint">This is flexibility. You're still here, still engaged. But it costs less.</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <div class="step-q">Now slump completely. Let everything go.</div>
+                    <div class="step-hint">This is collapse. It feels easy at first but you can't function from here.</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <div class="step-q">Come back to the middle. That middle place, between rigid and collapsed, is what we're working on today.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-nav">
+            <button class="ghost">&larr; Back</button>
+            <button onclick="showPage(1)">The Skills &rarr;</button>
+        </div>
+    </div>
+
+
+    <!-- ======================== THE SKILLS ======================== -->
+    <div class="page">
+
+        <div class="section-label green">The concept</div>
+        <h2><span class="timing">15 to 20 min</span>What flexibility actually means</h2>
+        <p class="body-text">
+            Flexibility is not about having no structure. It's not about saying yes to everything or giving up your preferences. It's the ability to adapt when the situation calls for it without losing yourself in the process.
+        </p>
+        <p class="body-text">
+            Think of it like a tree in a storm. A rigid tree snaps. A flexible tree bends, takes the hit, and comes back. A tree with no structure at all just falls over.
+        </p>
+
+        <h3 style="margin-top: 2rem;">The spectrum</h3>
+        <p class="body-text" style="margin-top: 0.25rem;">Flexibility lives in the middle. Tap each zone to see what it looks like.</p>
+
+        <div class="spectrum">
+            <div class="spectrum-bar">
+                <div class="spectrum-zone rigid" onclick="spectrumShow(0, this)">Rigid</div>
+                <div class="spectrum-zone flex" onclick="spectrumShow(1, this)" style="flex: 1.5;">Flexible</div>
+                <div class="spectrum-zone chaos" onclick="spectrumShow(2, this)">Chaotic</div>
+            </div>
+            <div class="spectrum-detail active" id="sp0">
+                <p><strong>Rigid</strong> looks like: same routine no matter what, one "right" way to do things, falling apart when plans change, black-and-white thinking, rules that can never bend. It feels safe, but the safety costs a lot.</p>
+                <ul>
+                    <li>"I have to eat at exactly this time or the whole day is ruined"</li>
+                    <li>"If I can't do it perfectly, I won't do it at all"</li>
+                    <li>"I already decided how I feel about this and nothing will change my mind"</li>
+                </ul>
+            </div>
+            <div class="spectrum-detail" id="sp1">
+                <p><strong>Flexible</strong> looks like: having preferences but adapting when needed, trying new things even when they're uncomfortable, holding two ideas at the same time, adjusting without falling apart. It's not comfortable. It's functional.</p>
+                <ul>
+                    <li>"This isn't what I planned, and I can work with it"</li>
+                    <li>"I feel anxious about this AND I'm going to try it anyway"</li>
+                    <li>"I was wrong about that, and that's actually fine"</li>
+                </ul>
+            </div>
+            <div class="spectrum-detail" id="sp2">
+                <p><strong>Chaotic</strong> looks like: no structure at all, reactive to everything, no consistent values or direction, saying yes to everything, impulsive without reflection. It feels like freedom but there's nothing to hold onto.</p>
+                <ul>
+                    <li>"Whatever, nothing matters anyway"</li>
+                    <li>"I don't care, I'll just do whatever"</li>
+                    <li>"Rules are stupid, I don't need any"</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="callout green" style="margin-top: 1.5rem;">
+            <p>Most people with eating disorders live on the rigid end. Recovery is not about jumping to chaos. It's about learning to live closer to the middle.</p>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section-label warm">Four types of flexibility</div>
+        <h2>Where bending matters most</h2>
+
+        <div class="accordion" style="margin-top: 1rem;">
+            <div class="acc-item open">
+                <div class="acc-header" onclick="toggleAcc(this)">
+                    <div class="acc-title">Cognitive flexibility</div>
+                    <div class="acc-icon">+</div>
+                </div>
+                <div class="acc-body">
+                    <p>The ability to think in more than two categories. Rigid thinking sounds like "always" and "never" and "the only option." Flexible thinking sounds like "maybe," "it depends," and "what if."</p>
+                    <ul>
+                        <li>Rigid: "I'm either doing great or I'm a failure"</li>
+                        <li>Flexible: "I'm struggling with one thing and doing okay with another. Both are real."</li>
+                        <li>Rigid: "If they're mad at me, they hate me"</li>
+                        <li>Flexible: "They might be mad about this one thing and still care about me overall"</li>
+                    </ul>
+                    <div class="aside">The eating disorder is a machine that turns flexible thoughts into rigid ones. Recovery is learning to notice the machine at work.</div>
+                </div>
+            </div>
+            <div class="acc-item">
+                <div class="acc-header" onclick="toggleAcc(this)">
+                    <div class="acc-title">Behavioral flexibility</div>
+                    <div class="acc-icon">+</div>
+                </div>
+                <div class="acc-body">
+                    <p>The ability to try a different response instead of running the same autopilot every time. Not forcing yourself. Choosing.</p>
+                    <ul>
+                        <li>Eating something you didn't plan to eat because the situation changed</li>
+                        <li>Saying yes to something spontaneous even though it wasn't on the schedule</li>
+                        <li>Doing a social thing when the urge is to isolate</li>
+                        <li>Resting when the urge is to push harder</li>
+                    </ul>
+                    <div class="aside">Behavioral flexibility is not about forcing yourself to be uncomfortable all the time. It's about having more than one option available when you need it.</div>
+                </div>
+            </div>
+            <div class="acc-item">
+                <div class="acc-header" onclick="toggleAcc(this)">
+                    <div class="acc-title">Emotional flexibility</div>
+                    <div class="acc-icon">+</div>
+                </div>
+                <div class="acc-body">
+                    <p>The ability to let emotions move through you instead of getting stuck on one or shutting them all down. Emotions are supposed to shift and change. When they get stuck, that's rigidity.</p>
+                    <ul>
+                        <li>Letting yourself feel sad without deciding you're depressed forever</li>
+                        <li>Feeling angry without needing to act on it right now</li>
+                        <li>Being anxious about something and not letting the anxiety make the decision for you</li>
+                        <li>Feeling two things at once and letting both be true</li>
+                    </ul>
+                    <div class="aside">Emotional rigidity looks like getting stuck in one feeling for days, or numbing everything so you don't feel any of it. Emotional flexibility is the middle.</div>
+                </div>
+            </div>
+            <div class="acc-item">
+                <div class="acc-header" onclick="toggleAcc(this)">
+                    <div class="acc-title">Identity flexibility</div>
+                    <div class="acc-icon">+</div>
+                </div>
+                <div class="acc-body">
+                    <p>The ability to let who you are evolve. This one is hard. Especially when you're young, there's pressure to define yourself and then stay that definition forever. But identity is not a tattoo. It's more like a playlist that you keep updating.</p>
+                    <ul>
+                        <li>"I'm the quiet one" doesn't mean you can never be loud</li>
+                        <li>"I'm the strong one" doesn't mean you can never need help</li>
+                        <li>"I'm the sick one" doesn't mean that has to be your whole story</li>
+                        <li>You can outgrow a version of yourself and still honor who that person was</li>
+                    </ul>
+                    <div class="aside">The eating disorder gives you an identity. It tells you who you are. Letting go of that identity is terrifying because it means facing the question: who am I without it? The answer is: someone you haven't fully met yet. And that's not a bad thing.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-nav">
+            <button onclick="showPage(0)">&larr; Welcome</button>
+            <button onclick="showPage(2)">Practice &rarr;</button>
+        </div>
+    </div>
+
+
+    <!-- ======================== PRACTICE ======================== -->
+    <div class="page">
+
+        <div class="section-label warm">Practice</div>
+        <h2><span class="timing">15 to 20 min</span>The rigidity audit</h2>
+        <p class="body-text">
+            Six areas where rigidity likes to hide. Tap each one to see the rigid pattern and the flexible alternative. Be honest about which ones you recognize.
+        </p>
+
+        <div class="challenge-grid">
+            <div class="challenge" onclick="revealChallenge(this)">
+                <div class="challenge-domain">Food</div>
+                <div class="challenge-rigid">"It has to be this exact thing at this exact time"</div>
+                <div class="challenge-flex">What if today you let the time shift by 15 minutes, or swapped one thing, and noticed what actually happens?</div>
+            </div>
+            <div class="challenge" onclick="revealChallenge(this)">
+                <div class="challenge-domain">Body</div>
+                <div class="challenge-rigid">"I have to check, measure, or compare every day"</div>
+                <div class="challenge-flex">What if you skipped the check for one day and paid attention to how your body feels instead of how it looks?</div>
+            </div>
+            <div class="challenge" onclick="revealChallenge(this)">
+                <div class="challenge-domain">Social</div>
+                <div class="challenge-rigid">"I already know how this will go, so why bother"</div>
+                <div class="challenge-flex">What if you went into one social situation this week without a prediction? Just see what happens.</div>
+            </div>
+            <div class="challenge" onclick="revealChallenge(this)">
+                <div class="challenge-domain">School / Work</div>
+                <div class="challenge-rigid">"If it's not perfect, it's not worth turning in"</div>
+                <div class="challenge-flex">What if you submitted something at 80% and noticed whether the world actually ended?</div>
+            </div>
+            <div class="challenge" onclick="revealChallenge(this)">
+                <div class="challenge-domain">Routine</div>
+                <div class="challenge-rigid">"If my routine gets disrupted, the whole day is ruined"</div>
+                <div class="challenge-flex">What if the disruption is the interesting part? What if you could recover from a change without starting over?</div>
+            </div>
+            <div class="challenge" onclick="revealChallenge(this)">
+                <div class="challenge-domain">Identity</div>
+                <div class="challenge-rigid">"I'm just not the kind of person who does that"</div>
+                <div class="challenge-flex">What if you tried being that kind of person for one afternoon? You can always come back.</div>
+            </div>
+        </div>
+
+        <div class="callout" style="margin-top: 1rem;">
+            <p>You don't have to share which ones hit. Just notice. If something lands, sit with it for a second.</p>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section-label green">Guided exercise</div>
+        <h2>The flexibility experiment</h2>
+        <p class="body-text">
+            Pick one area from above (or any area in your life where you notice rigidity). Walk through these steps in your head or on paper.
+        </p>
+
+        <div class="steps">
+            <div class="step">
+                <div class="step-num">1</div>
+                <div class="step-content">
+                    <div class="step-q">What's the rigid rule or pattern?</div>
+                    <div class="step-hint">Say it plainly. "I always..." or "I never..." or "It has to be..."</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div class="step-content">
+                    <div class="step-q">What does the rule protect you from?</div>
+                    <div class="step-hint">Anxiety? Uncertainty? Judgment? Feeling out of control? Name it.</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div class="step-content">
+                    <div class="step-q">What does the rule cost you?</div>
+                    <div class="step-hint">Time? Energy? Connection? Experiences? Fun? Be specific.</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">4</div>
+                <div class="step-content">
+                    <div class="step-q">What would bending this rule by 10% look like?</div>
+                    <div class="step-hint">Not breaking it. Bending it. The smallest possible flex.</div>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">5</div>
+                <div class="step-content">
+                    <div class="step-q">What do you predict would happen if you tried?</div>
+                    <div class="step-hint">Write down the prediction. Then, if you actually try it, check whether the prediction was right.</div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="divider">
+
+        <div class="section-label">Discussion</div>
+        <h3>Draw a prompt</h3>
+        <p class="body-text" style="margin-bottom: 0.25rem;">Tap a card to flip it. Use whatever comes up, or draw another.</p>
+
+        <div class="card-deck" id="flex-deck">
+            <div class="draw-card" onclick="flipCard(this)">
+                <div class="draw-card-inner">
+                    <div class="draw-card-back"><span class="card-glyph">&#9670;</span><span class="card-label">Draw</span></div>
+                    <div class="draw-card-front"><span class="card-num"></span><span class="card-prompt"></span></div>
+                </div>
+            </div>
+            <div class="draw-card" onclick="flipCard(this)">
+                <div class="draw-card-inner">
+                    <div class="draw-card-back"><span class="card-glyph">&#9670;</span><span class="card-label">Draw</span></div>
+                    <div class="draw-card-front"><span class="card-num"></span><span class="card-prompt"></span></div>
+                </div>
+            </div>
+            <div class="draw-card" onclick="flipCard(this)">
+                <div class="draw-card-inner">
+                    <div class="draw-card-back"><span class="card-glyph">&#9670;</span><span class="card-label">Draw</span></div>
+                    <div class="draw-card-front"><span class="card-num"></span><span class="card-prompt"></span></div>
+                </div>
+            </div>
+            <div class="draw-card" onclick="flipCard(this)">
+                <div class="draw-card-inner">
+                    <div class="draw-card-back"><span class="card-glyph">&#9670;</span><span class="card-label">Draw</span></div>
+                    <div class="draw-card-front"><span class="card-num"></span><span class="card-prompt"></span></div>
+                </div>
+            </div>
+            <div class="draw-card" onclick="flipCard(this)">
+                <div class="draw-card-inner">
+                    <div class="draw-card-back"><span class="card-glyph">&#9670;</span><span class="card-label">Draw</span></div>
+                    <div class="draw-card-front"><span class="card-num"></span><span class="card-prompt"></span></div>
+                </div>
+            </div>
+        </div>
+        <div class="reshuffle-wrap">
+            <button class="reshuffle-btn" id="flex-reshuffle" style="display:none;" onclick="reshuffleCards()">Reshuffle</button>
+        </div>
+
+        <div class="page-nav">
+            <button onclick="showPage(1)">&larr; The Skills</button>
+            <button onclick="showPage(3)">Discussion &rarr;</button>
+        </div>
+    </div>
+
+
+    <!-- ======================== DISCUSSION ======================== -->
+    <div class="page">
+
+        <div class="section-label warm">Discussion</div>
+        <h2><span class="timing">20 to 25 min</span>Open it up</h2>
+        <p class="body-text">
+            Starting points, not a script. Let the conversation go where it goes. Pass is always fine.
+        </p>
+
+        <div class="questions">
+            <div class="question">
+                <div class="question-label">Opening</div>
+                <div class="question-text">Where did you land on the spectrum? Are you more rigid, more chaotic, or somewhere in the middle? Does it depend on the area of your life?</div>
+            </div>
+            <div class="question">
+                <div class="question-label">The cost</div>
+                <div class="question-text">What has rigidity protected you from? And what has it cost you? Can both be true at the same time?</div>
+            </div>
+            <div class="question">
+                <div class="question-label">The experiment</div>
+                <div class="question-text">If you were going to bend one rule this week by 10%, which one would it be? What makes that one feel possible, or impossible?</div>
+            </div>
+            <div class="question">
+                <div class="question-label">Identity</div>
+                <div class="question-text">Is there a version of yourself you've been holding onto because it feels safe, even though you might be outgrowing it? What would the next version look like?</div>
+                <div class="question-note">This one can go deep. Give it time.</div>
+            </div>
+            <div class="question">
+                <div class="question-label">The harder question</div>
+                <div class="question-text">Does the eating disorder ever disguise rigidity as discipline, commitment, or self-control? How do you tell the difference between healthy structure and rigid rules?</div>
+            </div>
+        </div>
+
+        <div class="callout">
+            <p>You can listen without sharing. You can share a little. You can pass with no explanation. Whatever keeps you in the room is the right choice.</p>
+        </div>
+
+        <div class="page-nav">
+            <button onclick="showPage(2)">&larr; Practice</button>
+            <button onclick="showPage(4)">Closing &rarr;</button>
+        </div>
+    </div>
+
+
+    <!-- ======================== CLOSING ======================== -->
+    <div class="page">
+
+        <div class="section-label">Closing</div>
+        <h2><span class="timing">5 to 7 min</span>One last round</h2>
+        <p class="body-text">Share your name and one of the following, or pass.</p>
+
+        <div class="options-grid">
+            <div class="option" onclick="select(this)">
+                <div class="option-label">One word</div>
+                <div class="option-desc">How you're leaving today</div>
+            </div>
+            <div class="option" onclick="select(this)">
+                <div class="option-label">One rule to bend</div>
+                <div class="option-desc">Something you'll flex by 10% this week</div>
+            </div>
+            <div class="option" onclick="select(this)">
+                <div class="option-label">Something you noticed</div>
+                <div class="option-desc">About your own rigidity or flexibility</div>
+            </div>
+            <div class="option" onclick="select(this)">
+                <div class="option-label">Pass</div>
+                <div class="option-desc">You're here, and that's enough</div>
+            </div>
+        </div>
+
+        <div class="callout green" style="margin-top: 2rem;">
+            <div class="callout-label">Facilitator note</div>
+            <p>
+                Flexibility is not about being chill. It's not about not caring. It's about being able to hold structure and still adapt. That's harder than rigidity. Rigidity is easy because it removes choice. Flexibility means you have to keep choosing, over and over, and that takes courage. This week, try one small bend. Not a break. A bend. Notice what happens in your body when you do it, and notice whether the thing you were afraid of actually happens. That information is yours to keep.
+            </p>
+        </div>
+
+        <div class="callout" style="margin-top: 1rem;">
+            <div class="callout-label">Weekly challenge</div>
+            <p>Pick one rule you follow on autopilot. Bend it by 10% on one day. Before you do it, write down your prediction of what will happen. After you do it, write down what actually happened. Bring the results next week if you want to share.</p>
+        </div>
+
+        <div class="page-nav">
+            <button onclick="showPage(3)">&larr; Discussion</button>
+            <button onclick="showPage(0)">Start over</button>
+        </div>
+    </div>
+
+
+    <div class="footer">
+        <strong>Crisis resources</strong><br>
+        988 Suicide & Crisis Lifeline: call or text 988<br>
+        Crisis Text Line: text HOME to 741741
+    </div>
+
+</div>
+
+<script>
+    function showPage(i, btn) {
+        document.querySelectorAll('.page').forEach((p, j) => p.classList.toggle('active', j === i));
+        document.querySelectorAll('.nav button').forEach((b, j) => b.classList.toggle('active', j === i));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleAcc(header) {
+        header.closest('.acc-item').classList.toggle('open');
+    }
+
+    function select(el) {
+        el.closest('.options-grid').querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+        el.classList.add('selected');
+    }
+
+    /* Spectrum */
+    function spectrumShow(i, el) {
+        document.querySelectorAll('.spectrum-zone').forEach(z => z.style.opacity = '0.5');
+        el.style.opacity = '1';
+        for (let j = 0; j < 3; j++) document.getElementById('sp' + j).classList.toggle('active', j === i);
+    }
+
+    /* Challenge reveal */
+    function revealChallenge(el) {
+        el.classList.toggle('revealed');
+    }
+
+    /* Card draw */
+    const flexPrompts = [
+        "What's one thing about yourself that you've decided is 'just who you are'? What if it's actually a choice you keep making?",
+        "When was the last time you did something that genuinely surprised you? What made it possible?",
+        "Name a rule you follow that nobody actually made you follow. Where did it come from?",
+        "What would you try this week if you knew nobody was watching or judging?",
+        "What's one thing the eating disorder tells you is non-negotiable? What would happen if you negotiated?",
+        "Who in your life models flexibility well? What do they do that you'd like to try?",
+        "What's your go-to response when plans change? Is that the response you want to have?",
+        "If you could break one of your own rules for a day with no consequences, which one would it be?",
+        "What's something you used to be totally sure about that you're less sure about now? Is that uncomfortable or freeing?",
+        "What would 'good enough' look like in one area where you currently demand perfection?",
+        "Name one belief about yourself that you got from someone else. Does it still fit?",
+        "What's the most rigid part of your day? What would bending it by 10% look like?",
+        "When someone disagrees with you, what happens in your body? What do you do next?",
+        "What would your life look like if you trusted yourself to figure things out instead of needing a plan for everything?",
+        "What's one thing you'd like to be more flexible about but you're scared to try?"
+    ];
+
+    let cardPool = [];
+
+    function shuffleArray(arr) {
+        const a = [...arr];
+        for (let i = a.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+    }
+
+    function dealCards() {
+        cardPool = shuffleArray(flexPrompts).slice(0, 5);
+        const cards = document.querySelectorAll('#flex-deck .draw-card');
+        cards.forEach((card, i) => {
+            card.classList.remove('flipped');
+            card.querySelector('.card-prompt').textContent = cardPool[i];
+            card.querySelector('.card-num').textContent = '';
+        });
+        document.getElementById('flex-reshuffle').style.display = 'none';
+    }
+
+    function flipCard(el) {
+        if (el.classList.contains('flipped')) return;
+        el.classList.add('flipped');
+        const deck = el.closest('.card-deck');
+        const all = deck.querySelectorAll('.draw-card');
+        const flipped = deck.querySelectorAll('.draw-card.flipped');
+        if (flipped.length === all.length) {
+            document.getElementById('flex-reshuffle').style.display = 'inline-block';
+        }
+    }
+
+    function reshuffleCards() {
+        dealCards();
+    }
+
+    dealCards();
+</script>
+</body>
+</html>
