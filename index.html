@@ -223,18 +223,32 @@
         .challenge.revealed .challenge-flex { display: block; }
         .challenge.revealed .challenge-rigid { color: var(--text-3); text-decoration: line-through; font-weight: 400; }
 
-        /* Card draw */
+        /* Card draw - tarot system */
+        .tarot-intro {
+            text-align: center; margin: 1.5rem 0 0.5rem;
+            font-size: 0.8rem; font-weight: 500; color: var(--text-3);
+            letter-spacing: 0.06em;
+        }
+        .suit-legend {
+            display: flex; justify-content: center; gap: 1.25rem; flex-wrap: wrap;
+            margin: 0.75rem 0 1.5rem; font-size: 0.65rem; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3);
+        }
+        .suit-legend span { display: flex; align-items: center; gap: 0.3rem; }
+        .suit-dot {
+            width: 8px; height: 8px; border-radius: 50%; display: inline-block;
+        }
         .card-deck {
-            display: flex; gap: 0.75rem; justify-content: center;
-            flex-wrap: wrap; margin: 1.5rem 0;
+            display: flex; gap: 0.85rem; justify-content: center;
+            flex-wrap: wrap; margin: 0 0 1.5rem;
         }
         .draw-card {
-            width: 128px; height: 182px; perspective: 700px;
+            width: 120px; height: 200px; perspective: 800px;
             cursor: pointer; flex-shrink: 0;
         }
         .draw-card-inner {
             position: relative; width: 100%; height: 100%;
-            transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
             transform-style: preserve-3d;
         }
         .draw-card.flipped .draw-card-inner { transform: rotateY(180deg); }
@@ -243,39 +257,81 @@
             backface-visibility: hidden; -webkit-backface-visibility: hidden;
             border-radius: 10px; display: flex; align-items: center;
             justify-content: center; text-align: center;
+            flex-direction: column;
         }
+        /* Card back - ornate */
         .draw-card-back {
-            background: linear-gradient(145deg, #D8EDE6, #C8DED6); border: 2px solid var(--accent);
-            flex-direction: column; gap: 0.4rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: #2C2C2C;
+            border: 2px solid #4A4A4A;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15), inset 0 0 0 6px #2C2C2C, inset 0 0 0 7px #4A4A4A;
+            gap: 0.5rem;
         }
         .draw-card-back .card-glyph {
-            font-size: 1.4rem; color: var(--accent); opacity: 0.7; line-height: 1;
+            font-size: 1.8rem; line-height: 1; opacity: 0.5;
+            color: #B8A88A;
         }
         .draw-card-back .card-label {
-            font-size: 0.6rem; font-weight: 600; letter-spacing: 0.12em;
-            text-transform: uppercase; color: var(--accent); opacity: 0.7;
+            font-size: 0.5rem; font-weight: 600; letter-spacing: 0.18em;
+            text-transform: uppercase; color: #B8A88A; opacity: 0.5;
         }
+        .draw-card-back .card-border-top,
+        .draw-card-back .card-border-bot {
+            position: absolute; left: 12px; right: 12px; height: 1px;
+            background: #4A4A4A;
+        }
+        .draw-card-back .card-border-top { top: 16px; }
+        .draw-card-back .card-border-bot { bottom: 16px; }
+        /* Card front */
         .draw-card-front {
-            background: var(--surface); border: 1px solid var(--border);
-            transform: rotateY(180deg); padding: 0.9rem;
-            flex-direction: column; gap: 0.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            transform: rotateY(180deg);
+            padding: 0.7rem 0.65rem;
+            gap: 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            justify-content: flex-start;
+        }
+        .draw-card-front .card-suit-bar {
+            width: 100%; height: 3px; border-radius: 2px 2px 0 0;
+            position: absolute; top: 0; left: 0;
+            border-radius: 10px 10px 0 0;
+        }
+        .draw-card-front .card-suit-name {
+            font-size: 0.5rem; font-weight: 600; letter-spacing: 0.14em;
+            text-transform: uppercase; margin-top: 0.6rem; margin-bottom: 0.15rem;
+        }
+        .draw-card-front .card-glyph-sm {
+            font-size: 1.1rem; line-height: 1; margin: 0.35rem 0;
+        }
+        .draw-card-front .card-name {
+            font-size: 0.82rem; font-weight: 700; color: var(--text);
+            line-height: 1.2; margin-bottom: 0.35rem;
         }
         .draw-card-front .card-prompt {
-            font-size: 0.78rem; font-weight: 500; color: var(--text); line-height: 1.6;
+            font-size: 0.62rem; font-weight: 400; color: var(--text-2);
+            line-height: 1.55; flex: 1;
         }
-        .draw-card-front .card-num {
-            font-size: 0.6rem; font-weight: 600; color: var(--text-3); letter-spacing: 0.1em;
-        }
-        .reshuffle-wrap { text-align: center; margin-top: 1rem; }
+        /* Suit colors */
+        .suit-root { color: #8A6A3A; }
+        .suit-storm { color: #5A6A8A; }
+        .suit-mirror { color: #7A7A7A; }
+        .suit-bridge { color: #8A5A6A; }
+        .suit-edge { color: #3A7A6A; }
+        .bg-root { background: #8A6A3A; }
+        .bg-storm { background: #5A6A8A; }
+        .bg-mirror { background: #7A7A7A; }
+        .bg-bridge { background: #8A5A6A; }
+        .bg-edge { background: #3A7A6A; }
+
+        .reshuffle-wrap { text-align: center; margin-top: 0.75rem; }
         .reshuffle-btn {
-            background: none; border: 1px solid var(--border); border-radius: 6px;
-            font-family: inherit; font-size: 0.8rem; font-weight: 500;
-            color: var(--text-2); padding: 0.5rem 1.25rem; cursor: pointer;
+            background: #2C2C2C; border: 1px solid #4A4A4A; border-radius: 6px;
+            font-family: inherit; font-size: 0.75rem; font-weight: 500;
+            color: #B8A88A; padding: 0.5rem 1.5rem; cursor: pointer;
             transition: background 0.15s, border-color 0.15s;
+            letter-spacing: 0.06em;
         }
-        .reshuffle-btn:hover { background: var(--bg); border-color: var(--text-3); }
+        .reshuffle-btn:hover { background: #3A3A3A; border-color: #666; }
 
         /* Page nav */
         .page-nav {
@@ -302,8 +358,10 @@
             h1 { font-size: 1.8rem; }
             .options-grid { grid-template-columns: 1fr; }
             .challenge-grid { grid-template-columns: 1fr; }
-            .draw-card { width: 110px; height: 158px; }
-            .draw-card-front .card-prompt { font-size: 0.72rem; }
+            .draw-card { width: 100px; height: 170px; }
+            .draw-card-front .card-prompt { font-size: 0.55rem; }
+            .draw-card-front .card-name { font-size: 0.72rem; }
+            .card-deck { gap: 0.5rem; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -635,44 +693,21 @@
 
         <hr class="divider">
 
-        <div class="section-label">Discussion</div>
-        <h3>Draw a prompt</h3>
-        <p class="body-text" style="margin-bottom: 0.25rem;">Tap a card to flip it. Use whatever comes up, or draw another.</p>
+        <div class="section-label">The Deck</div>
+        <h3>Draw from the deck</h3>
+        <p class="body-text" style="margin-bottom: 0.25rem;">Five suits. Twenty-five cards. Tap to reveal what the deck has for you.</p>
 
-        <div class="card-deck" id="flex-deck">
-            <div class="draw-card" onclick="flipCard(this)">
-                <div class="draw-card-inner">
-                    <div class="draw-card-back"><span class="card-glyph">&#9670;</span><span class="card-label">Draw</span></div>
-                    <div class="draw-card-front"><span class="card-num"></span><span class="card-prompt"></span></div>
-                </div>
-            </div>
-            <div class="draw-card" onclick="flipCard(this)">
-                <div class="draw-card-inner">
-                    <div class="draw-card-back"><span class="card-glyph">&#9670;</span><span class="card-label">Draw</span></div>
-                    <div class="draw-card-front"><span class="card-num"></span><span class="card-prompt"></span></div>
-                </div>
-            </div>
-            <div class="draw-card" onclick="flipCard(this)">
-                <div class="draw-card-inner">
-                    <div class="draw-card-back"><span class="card-glyph">&#9670;</span><span class="card-label">Draw</span></div>
-                    <div class="draw-card-front"><span class="card-num"></span><span class="card-prompt"></span></div>
-                </div>
-            </div>
-            <div class="draw-card" onclick="flipCard(this)">
-                <div class="draw-card-inner">
-                    <div class="draw-card-back"><span class="card-glyph">&#9670;</span><span class="card-label">Draw</span></div>
-                    <div class="draw-card-front"><span class="card-num"></span><span class="card-prompt"></span></div>
-                </div>
-            </div>
-            <div class="draw-card" onclick="flipCard(this)">
-                <div class="draw-card-inner">
-                    <div class="draw-card-back"><span class="card-glyph">&#9670;</span><span class="card-label">Draw</span></div>
-                    <div class="draw-card-front"><span class="card-num"></span><span class="card-prompt"></span></div>
-                </div>
-            </div>
+        <div class="suit-legend">
+            <span><span class="suit-dot bg-root"></span> The Root</span>
+            <span><span class="suit-dot bg-storm"></span> The Storm</span>
+            <span><span class="suit-dot bg-mirror"></span> The Mirror</span>
+            <span><span class="suit-dot bg-bridge"></span> The Bridge</span>
+            <span><span class="suit-dot bg-edge"></span> The Edge</span>
         </div>
+
+        <div class="card-deck" id="flex-deck"></div>
         <div class="reshuffle-wrap">
-            <button class="reshuffle-btn" id="flex-reshuffle" style="display:none;" onclick="reshuffleCards()">Reshuffle</button>
+            <button class="reshuffle-btn" id="flex-reshuffle" style="display:none;" onclick="reshuffleCards()">Reshuffle the deck</button>
         </div>
 
         <div class="page-nav">
@@ -807,26 +842,54 @@
         el.classList.toggle('revealed');
     }
 
-    /* Card draw */
-    const flexPrompts = [
-        "What's one thing about yourself that you've decided is 'just who you are'? What if it's actually a choice you keep making?",
-        "When was the last time you did something that genuinely surprised you? What made it possible?",
-        "Name a rule you follow that nobody actually made you follow. Where did it come from?",
-        "What would you try this week if you knew nobody was watching or judging?",
-        "What's one thing the eating disorder tells you is non-negotiable? What would happen if you negotiated?",
-        "Who in your life models flexibility well? What do they do that you'd like to try?",
-        "What's your go-to response when plans change? Is that the response you want to have?",
-        "If you could break one of your own rules for a day with no consequences, which one would it be?",
-        "What's something you used to be totally sure about that you're less sure about now? Is that uncomfortable or freeing?",
-        "What would 'good enough' look like in one area where you currently demand perfection?",
-        "Name one belief about yourself that you got from someone else. Does it still fit?",
-        "What's the most rigid part of your day? What would bending it by 10% look like?",
-        "When someone disagrees with you, what happens in your body? What do you do next?",
-        "What would your life look like if you trusted yourself to figure things out instead of needing a plan for everything?",
-        "What's one thing you'd like to be more flexible about but you're scared to try?"
+    /* Tarot deck system */
+    const SUITS = {
+        root:   { name: 'The Root',   glyph: '\u25C8', css: 'root' },
+        storm:  { name: 'The Storm',  glyph: '\u25CE', css: 'storm' },
+        mirror: { name: 'The Mirror', glyph: '\u25C7', css: 'mirror' },
+        bridge: { name: 'The Bridge', glyph: '\u25C6', css: 'bridge' },
+        edge:   { name: 'The Edge',   glyph: '\u2726', css: 'edge' }
+    };
+
+    const DECK = [
+        /* THE ROOT - identity, self, who you are becoming */
+        { suit: 'root', name: 'The Mask',       prompt: 'What version of yourself do you perform most often? What would people see if you took it off?' },
+        { suit: 'root', name: 'The Label',      prompt: 'Name one thing people call you that you have started to believe. Is it yours, or did someone hand it to you?' },
+        { suit: 'root', name: 'The Shed',       prompt: 'What identity are you outgrowing? What does it feel like to notice that it no longer fits?' },
+        { suit: 'root', name: 'The Anchor',     prompt: 'What part of who you are feels solid right now? What part feels like it is shifting under your feet?' },
+        { suit: 'root', name: 'The Stranger',   prompt: 'If you met the version of yourself you are becoming, what would surprise you most about them?' },
+
+        /* THE STORM - change, disruption, impermanence */
+        { suit: 'storm', name: 'The Disruption', prompt: 'Think of the last time your plans fell apart completely. What did you do? What do you wish you had done?' },
+        { suit: 'storm', name: 'The Unknown',    prompt: 'What is one thing you are avoiding right now because you cannot predict how it will go?' },
+        { suit: 'storm', name: 'The Pivot',      prompt: 'When was the last time you changed direction mid-plan and it actually turned out okay?' },
+        { suit: 'storm', name: 'The Wave',       prompt: 'What emotion have you been trying to hold perfectly still? What would happen if you let it move?' },
+        { suit: 'storm', name: 'The Crack',      prompt: 'Where is your rigidity already starting to show cracks? Is that terrifying, freeing, or both?' },
+
+        /* THE MIRROR - truth, honesty, seeing clearly */
+        { suit: 'mirror', name: 'The Rule',      prompt: 'Name a rule you follow every day that nobody actually made you follow. Where did it come from?' },
+        { suit: 'mirror', name: 'The Lie',       prompt: 'What is one thing the eating disorder tells you that you are starting to suspect is not true?' },
+        { suit: 'mirror', name: 'The Cost',      prompt: 'Your rigidity has protected you from something. Name the protection. Now name what it has cost you.' },
+        { suit: 'mirror', name: 'The Prediction', prompt: 'Think of something you were certain would be terrible. Did it happen the way you predicted?' },
+        { suit: 'mirror', name: 'The Permission', prompt: 'What are you waiting for permission to want? Who exactly are you waiting to hear it from?' },
+
+        /* THE BRIDGE - connection, relationships, showing up */
+        { suit: 'bridge', name: 'The Wall',      prompt: 'Where do you use rigidity to keep people at a specific distance? What is the distance protecting?' },
+        { suit: 'bridge', name: 'The Ask',       prompt: 'What would you ask for in a relationship if you were not afraid of being too much?' },
+        { suit: 'bridge', name: 'The Witness',   prompt: 'Who in your life has actually seen you be flexible? What did they see, and did you let them?' },
+        { suit: 'bridge', name: 'The Echo',      prompt: 'Whose rigidity did you inherit? A parent, a coach, a culture? Do you still need what they taught you?' },
+        { suit: 'bridge', name: 'The Reveal',    prompt: 'If you stopped performing "fine" in your closest relationship, what would the other person actually see?' },
+
+        /* THE EDGE - growth, risk, the place where comfort ends */
+        { suit: 'edge', name: 'The 10%',         prompt: 'Pick one rule you live by. Bend it by 10%. What does that look like, specifically, tomorrow?' },
+        { suit: 'edge', name: 'The First Time',  prompt: 'What is something you have never tried because you decided in advance it was not for you?' },
+        { suit: 'edge', name: 'The Surprise',    prompt: 'When was the last time you genuinely surprised yourself? What made that moment possible?' },
+        { suit: 'edge', name: 'The Dare',        prompt: 'If you could break one of your own rules for an entire day with zero consequences, which one?' },
+        { suit: 'edge', name: 'The Experiment',  prompt: 'Design one tiny experiment for this week: change one thing and see what actually happens. What will you change?' }
     ];
 
-    let cardPool = [];
+    const NUM_CARDS = 5;
+    let dealt = [];
 
     function shuffleArray(arr) {
         const a = [...arr];
@@ -837,14 +900,31 @@
         return a;
     }
 
+    function buildCardHTML(cardData) {
+        const s = SUITS[cardData.suit];
+        return `<div class="draw-card" onclick="flipCard(this)">
+            <div class="draw-card-inner">
+                <div class="draw-card-back">
+                    <div class="card-border-top"></div>
+                    <span class="card-glyph">${s.glyph}</span>
+                    <span class="card-label">Flexibility</span>
+                    <div class="card-border-bot"></div>
+                </div>
+                <div class="draw-card-front">
+                    <div class="card-suit-bar bg-${s.css}"></div>
+                    <div class="card-suit-name suit-${s.css}">${s.name}</div>
+                    <div class="card-glyph-sm suit-${s.css}">${s.glyph}</div>
+                    <div class="card-name">${cardData.name}</div>
+                    <div class="card-prompt">${cardData.prompt}</div>
+                </div>
+            </div>
+        </div>`;
+    }
+
     function dealCards() {
-        cardPool = shuffleArray(flexPrompts).slice(0, 5);
-        const cards = document.querySelectorAll('#flex-deck .draw-card');
-        cards.forEach((card, i) => {
-            card.classList.remove('flipped');
-            card.querySelector('.card-prompt').textContent = cardPool[i];
-            card.querySelector('.card-num').textContent = '';
-        });
+        dealt = shuffleArray(DECK).slice(0, NUM_CARDS);
+        const deck = document.getElementById('flex-deck');
+        deck.innerHTML = dealt.map(c => buildCardHTML(c)).join('');
         document.getElementById('flex-reshuffle').style.display = 'none';
     }
 
@@ -859,9 +939,7 @@
         }
     }
 
-    function reshuffleCards() {
-        dealCards();
-    }
+    function reshuffleCards() { dealCards(); }
 
     dealCards();
 </script>
